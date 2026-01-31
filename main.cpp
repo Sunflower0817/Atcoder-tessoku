@@ -3,6 +3,13 @@
 #include <chrono>
 using namespace std;
 
+int H, W;
+int X[1509][1509];
+int Q;
+int A[1509], B[1509], C[1509], D[1509];
+// int Ss[1509][1509] = {0};
+int S[1509][1509] = {0};
+
 int main() {
     std::ifstream in("data/input.txt");
     std::ofstream out("data/output.txt");
@@ -12,24 +19,35 @@ int main() {
     std::cin.rdbuf(in.rdbuf());
     std::cout.rdbuf(out.rdbuf());
 
-    int D,N;
-    cin >> D;
-    cin >> N;
-    int L[100009], R[100009];
-    int sum[100009] = {0};
-    for (int i = 1; i <= N; ++i) {
-        cin >> L[i] >> R[i];
+    cin >> H >> W;
+    for (int i=1; i<=H; ++i){
+        for (int j=1; j<=W; ++j){
+            cin >> X[i][j];
+        }
     }
-    for (int i = 1; i <= N; i++){
-        sum[L[i]] += 1;
-        sum[R[i]+1] -= 1;
+    cin >> Q;
+    for (int i=1; i<=Q; ++i){
+        cin >> A[i] >> B[i] >> C[i] >> D[i];
     }
-    int part[100009] = {0};
-    for (int i = 1; i <= D; i++){
-        part[i] = part[i - 1] + sum[i];
+    // for (int i=1; i<=H; ++i){
+    //     for (int j=1; j<=W; j++){
+    //         Ss[i][j]=Ss[i][j-1]+X[i][j];
+    //     }
+    // }
+    // for (int i=1; i<=H; i++){
+    //     for (int j=1; j<=W; j++){
+    //         S[i][j]=S[i-1][j]+Ss[i][j];
+    //     }
+    // }
+    for (int i=1; i<=H; ++i){
+        for (int j=1; j<=W; j++){ S[i][j]=S[i][j-1]+X[i][j];}
     }
-    for (int i = 1; i <= D; i++){
-        cout << part[i] << endl;
+    for (int j=1; j<=W; ++j){
+        for (int i=1; i<=H; i++){ S[i][j]=S[i-1][j]+S[i][j];}
+    }
+    for (int i=1; i<=Q; i++){
+        int ans = S[C[i]][D[i]] - S[A[i]-1][D[i]] - S[C[i]][B[i]-1] + S[A[i]-1][B[i]-1];
+        cout << ans << endl;
     }
 
     auto end = std::chrono::high_resolution_clock::now();
