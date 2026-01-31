@@ -12,27 +12,24 @@ int main() {
     std::cin.rdbuf(in.rdbuf());
     std::cout.rdbuf(out.rdbuf());
 
-    int N, Q;
-    cin >> N >> Q;
-    int A[100000];
-    for (int i = 0; i < N; ++i) {cin >> A[i];}
-    int sum[N];
-    sum[0] = A[0];
-    for (int i = 1; i < N; ++i){
-        sum[i] = sum[i - 1] + A[i];
-    }
-    int L[Q], R[Q];
-    for (int i = 0; i < Q; ++i){
+    int D,N;
+    cin >> D;
+    cin >> N;
+    int L[100009], R[100009];
+    int sum[100009] = {0};
+    for (int i = 1; i <= N; ++i) {
         cin >> L[i] >> R[i];
     }
-    for (int i = 0; i < Q; ++i){
-        int psum = 0;
-        if (L[i] == 1) {
-            psum = sum[R[i]-1];
-        } else {
-            psum = sum[R[i]-1] - sum[L[i] - 2];
-        }
-        cout << psum << endl;
+    for (int i = 1; i <= N; i++){
+        sum[L[i]] += 1;
+        sum[R[i]+1] -= 1;
+    }
+    int part[100009] = {0};
+    for (int i = 1; i <= D; i++){
+        part[i] = part[i - 1] + sum[i];
+    }
+    for (int i = 1; i <= D; i++){
+        cout << part[i] << endl;
     }
 
     auto end = std::chrono::high_resolution_clock::now();
