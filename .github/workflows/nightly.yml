@@ -1,0 +1,45 @@
+name: Nightly M-D meal sync
+
+on:
+  schedule:
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Target date (YYYY-MM-DD). Omit to use today in UTC.'
+        required: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run auto planner
+        env:
+          TZ: Asia/Tokyo
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
+          MDMEAL_BASE_URL: ${{ secrets.MDMEAL_BASE_URL }}
+          MDMEAL_LOGIN_URL: ${{ secrets.MDMEAL_LOGIN_URL }}
+          MDMEAL_ORDER_URL: ${{ secrets.MDMEAL_ORDER_URL }}
+          MDMEAL_USERNAME: ${{ secrets.MDMEAL_USERNAME }}
+          MDMEAL_PASSWORD: ${{ secrets.MDMEAL_PASSWORD }}
+          MDMEAL_STORAGE_STATE: playwright/.auth/mdmeal.json
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
+          OPENAI_TEMPERATURE: '0'
+          PLANNER_MODE: agent
+        run: |
+          TARGET_DATE="${{ github.event.inputs.date }}"
+          if [ -z "$TARGET_DATE" ]; then TARGET_DATE="$(date -u +%F)"; fi
+          npm run auto -- --date "$TARGET_DATE"

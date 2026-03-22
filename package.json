@@ -1,0 +1,24 @@
+{
+  "name": "dormitory-food",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "meal": "tsx src/cli.ts meal",
+    "auto": "tsx src/cli.ts auto",
+    "batch": "tsx src/cli.ts batch",
+    "auth": "tsx scripts/auth.ts",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "googleapis": "^144.0.0",
+    "playwright": "^1.52.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
